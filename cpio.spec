@@ -1,6 +1,6 @@
 Name:           cpio
 Version:        2.12
-Release:        15
+Release:        16
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -18,6 +18,7 @@ Patch6000:      Fix-out-of-bounds-read.patch
 Patch6001:      Fix-signed-integer-overflow-big-block-sizes.patch
 Patch6002:      Fix-CVE-2019-14866.patch
 Patch6003:      add-option-to-add-metadata-in-copy-out-mode.patch
+Patch6004:      Fix-use-after-free-and-return-appropriate-error.patch
 
 Provides:       bundled(gnulib)
 Provides:       /bin/cpio
@@ -60,6 +61,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Thu Jul 2 2020 Roberto Sassu<roberto.sassu@huawei.com> - 2.12-16
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:fix use after free and return appropriate errors
+
 * Thu Jul 2 2020 Anakin Zhang<benjamin93@163.com> - 2.12-15
 - Type:enhancement
 - ID:NA
