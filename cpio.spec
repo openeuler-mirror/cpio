@@ -1,6 +1,6 @@
 Name:           cpio
 Version:        2.12
-Release:        14
+Release:        15
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -17,6 +17,7 @@ Patch6:         cpio-2.11-crc-fips-nit.patch
 Patch6000:      Fix-out-of-bounds-read.patch
 Patch6001:      Fix-signed-integer-overflow-big-block-sizes.patch
 Patch6002:      Fix-CVE-2019-14866.patch
+Patch6003:      add-option-to-add-metadata-in-copy-out-mode.patch
 
 Provides:       bundled(gnulib)
 Provides:       /bin/cpio
@@ -59,6 +60,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Thu Jul 2 2020 Anakin Zhang<benjamin93@163.com> - 2.12-15
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:add option to add file metadata in copy-out mode
+
 * Sat Dec 21 2019 openEuler Buildteam <buildteam@openeuler.org> - 2.12-14
 - Fix CVE-2019-14866
 
