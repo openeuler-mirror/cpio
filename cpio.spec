@@ -1,6 +1,6 @@
 Name:           cpio
 Version:        2.13
-Release:        1
+Release:        2
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -32,7 +32,7 @@ tape, or a pipe.
 %autosetup -n %{name}-%{version} -p1
 
 %build
-%configure
+%configure --with-rmt="%{_sysconfdir}/rmt"
 %make_build
 
 %install
@@ -57,6 +57,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Wed Aug 12 2020 Liquor <lirui130@huawei.com> - 2.13-2
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:use /etc/rmt as default rmt command
+
 * Thu Jul 30 2020 Liquor <lirui130@huawei.com> - 2.13-1
 - Type:enhancement
 - ID:NA
