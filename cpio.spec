@@ -32,7 +32,7 @@ tape, or a pipe.
 %autosetup -n %{name}-%{version} -p1
 
 %build
-%configure
+%configure --with-rmt="%{_sysconfdir}/rmt"
 %make_build
 
 %install
