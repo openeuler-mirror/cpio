@@ -1,6 +1,6 @@
 Name:           cpio
 Version:        2.13
-Release:        1
+Release:        2
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -16,6 +16,7 @@ Patch5:         cpio-2.10-longnames-split.patch
 Patch6:         cpio-2.11-crc-fips-nit.patch
 Patch7:		add-option-to-add-metadata-in-copy-out-mode.patch
 Patch8:		Fix-use-after-free-and-return-appropriate-error.patch
+Patch9:		revert-CVE-2015-1197.patch
 
 Provides:       bundled(gnulib)
 Provides:       /bin/cpio
@@ -32,6 +33,7 @@ tape, or a pipe.
 %autosetup -n %{name}-%{version} -p1
 
 %build
+autoreconf -fi
 %configure --with-rmt="%{_sysconfdir}/rmt"
 %make_build
 
@@ -57,6 +59,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Thu Nov 26 2020 Liquor <lirui130@huawei.com> - 2.13-2
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:revert fix CVE-2015-1197 because it causes shutdowm problems
+
 * Sun Aug 23 2020 chengquan <chengquan3@huawei.com> - 2.13-1
 - Update software to v2.13
 
