@@ -1,6 +1,6 @@
 Name:           cpio
 Version:        2.13
-Release:        2
+Release:        3
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -20,7 +20,7 @@ Patch9:		revert-CVE-2015-1197.patch
 
 Provides:       bundled(gnulib)
 Provides:       /bin/cpio
-BuildRequires:  gcc texinfo gettext gettext-devel rmt
+BuildRequires:  gcc texinfo gettext gettext-devel rmt autoconf automake
 
 %description
 GNU cpio copies files into or out of a cpio or tar archive.
@@ -59,6 +59,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Fri Jun 4 2021 fuanan <fuanan3@huawei.com> - 2.13-3
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:add 'autoconf automake' to BuildRequires to use autoreconf command
+
 * Thu Nov 26 2020 Liquor <lirui130@huawei.com> - 2.13-2
 - Type:bugfix
 - ID:NA
