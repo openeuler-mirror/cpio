@@ -1,6 +1,6 @@
 Name:           cpio
 Version:        2.13
-Release:        4
+Release:        5
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -17,6 +17,7 @@ Patch6:         cpio-2.11-crc-fips-nit.patch
 Patch7:		add-option-to-add-metadata-in-copy-out-mode.patch
 Patch8:		Fix-use-after-free-and-return-appropriate-error.patch
 Patch9:		revert-CVE-2015-1197.patch
+Patch10:        backport-cpio-2.13-mutiple-definition.patch
 
 Provides:       bundled(gnulib)
 Provides:       /bin/cpio
@@ -59,6 +60,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Fri Jul 30 2021 yixiangzhike <zhangxingliang3@huawei.com> - 2.13-5
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:Solve mutiple definition compilation error
+
 * Fri Jun 4 2021 fuanan <fuanan3@huawei.com> - 2.13-4
 - Type:bugfix
 - ID:NA
