@@ -45,7 +45,7 @@ index 31a15fa..03d9585 100644
  Treat the archive file as local, even if its name contains colons.
  @item -F [[@var{user}@@]@var{host}:]@var{archive-file}
 diff --git a/src/copyout.c b/src/copyout.c
-index 4b7336b..fdafb37 100644
+index 421d36d..4cd60a3 100644
 --- a/src/copyout.c
 +++ b/src/copyout.c
 @@ -22,6 +22,7 @@
@@ -151,7 +151,7 @@ index 4b7336b..fdafb37 100644
  /* Read a list of file names from the standard input
     and write a cpio collection on the standard output.
     The format of the header depends on the compatibility (-c) flag.  */
-@@ -603,6 +692,8 @@ process_copy_out ()
+@@ -604,6 +693,8 @@ process_copy_out (void)
    int in_file_des;		/* Source file descriptor.  */
    int out_file_des;		/* Output file descriptor.  */
    char *orig_file_name = NULL;
@@ -159,8 +159,8 @@ index 4b7336b..fdafb37 100644
 +  int ret, metadata_fd, metadata = 0, old_metadata, hard_link;
  
    /* Initialize the copy out.  */
-   ds_init (&input_name, 128);
-@@ -635,9 +726,37 @@ process_copy_out ()
+   file_hdr.c_magic = 070707;
+@@ -635,9 +726,37 @@ process_copy_out (void)
        prepare_append (out_file_des);
      }
  
@@ -199,8 +199,8 @@ index 4b7336b..fdafb37 100644
        /* Check for blank line.  */
        if (input_name.ds_string[0] == 0)
  	{
-@@ -667,8 +786,15 @@ process_copy_out ()
- 		    }
+@@ -662,8 +781,15 @@ process_copy_out (void)
+ 		    ds_append (&input_name, '/');
  		}
  	    }
 -	  
@@ -217,7 +217,7 @@ index 4b7336b..fdafb37 100644
  	  cpio_safer_name_suffix (input_name.ds_string, false,
  				  !no_abs_paths_flag, true);
  	  cpio_set_c_name (&file_hdr, input_name.ds_string);
-@@ -700,6 +826,7 @@ process_copy_out ()
+@@ -695,6 +821,7 @@ process_copy_out (void)
  		  else
  		    {
  		      add_link_defer (&file_hdr);
@@ -225,7 +225,7 @@ index 4b7336b..fdafb37 100644
  		      break;
  		    }
  		}
-@@ -836,6 +963,8 @@ process_copy_out ()
+@@ -831,6 +958,8 @@ process_copy_out (void)
  	    fprintf (stderr, "%s\n", orig_file_name);
  	  if (dot_flag)
  	    fputc ('.', stderr);
@@ -234,10 +234,10 @@ index 4b7336b..fdafb37 100644
  	}
      }
  
-@@ -875,6 +1004,11 @@ process_copy_out ()
- 			 (unsigned long) blocks), (unsigned long) blocks);
+@@ -871,6 +1000,11 @@ process_copy_out (void)
      }
    cpio_file_stat_free (&file_hdr);
+   ds_free (&input_name);
 +
 +  if (metadata_type != TYPE_NONE) {
 +    close(metadata_fd);
@@ -247,10 +247,10 @@ index 4b7336b..fdafb37 100644
  
  
 diff --git a/src/dstring.c b/src/dstring.c
-index e9c063f..1021d21 100644
+index 0f597cc..07e827f 100644
 --- a/src/dstring.c
 +++ b/src/dstring.c
-@@ -58,8 +58,8 @@ ds_resize (dynamic_string *string, int size)
+@@ -74,8 +74,8 @@ ds_reset (dynamic_string *s, size_t len)
     Return NULL if end of file is detected.  Otherwise,
     Return a pointer to the null-terminated string in S.  */
  
@@ -259,33 +259,29 @@ index e9c063f..1021d21 100644
 +static char *
 +ds_fgetstr_common (FILE *f, char *input_string, dynamic_string *s, char eos)
  {
-   int insize;			/* Amount needed for line.  */
-   int strsize;			/* Amount allocated for S.  */
-@@ -70,7 +70,10 @@ ds_fgetstr (FILE *f, dynamic_string *s, char eos)
-   strsize = s->ds_length;
+   int next_ch;
+ 
+@@ -83,10 +83,18 @@ ds_fgetstr (FILE *f, dynamic_string *s, char eos)
+   s->ds_idx = 0;
  
    /* Read the input string.  */
--  next_ch = getc (f);
+-  while ((next_ch = getc (f)) != eos && next_ch != EOF)
 +  if (input_string)
 +    next_ch = *input_string++;
 +  else
 +    next_ch = getc (f);
-   while (next_ch != eos && next_ch != EOF)
++  while (next_ch != eos && next_ch != EOF)
      {
-       if (insize >= strsize - 1)
-@@ -79,7 +82,10 @@ ds_fgetstr (FILE *f, dynamic_string *s, char eos)
- 	  strsize = s->ds_length;
- 	}
-       s->ds_string[insize++] = next_ch;
--      next_ch = getc (f);
+       ds_resize (s, 0);
+       s->ds_string[s->ds_idx++] = next_ch;
 +      if (input_string)
-+	next_ch = *input_string++;
++        next_ch = *input_string++;
 +      else
-+	next_ch = getc (f);
++        next_ch = getc (f);       
      }
-   s->ds_string[insize++] = '\0';
- 
-@@ -90,6 +96,12 @@ ds_fgetstr (FILE *f, dynamic_string *s, char eos)
+   ds_resize (s, 0);
+   s->ds_string[s->ds_idx] = '\0';
+@@ -121,6 +129,12 @@ ds_concat (dynamic_string *s, char const *str)
  }
  
  char *
@@ -298,25 +294,31 @@ index e9c063f..1021d21 100644
  ds_fgets (FILE *f, dynamic_string *s)
  {
    return ds_fgetstr (f, s, '\n');
-@@ -100,3 +112,9 @@ ds_fgetname (FILE *f, dynamic_string *s)
- {
+@@ -132,6 +146,12 @@ ds_fgetname (FILE *f, dynamic_string *s)
    return ds_fgetstr (f, s, '\0');
  }
-+
+ 
 +char *
 +ds_sgetstr (char *input_string, dynamic_string *s, char eos)
 +{
 +  return ds_fgetstr_common (NULL, input_string, s, eos);
 +}
++
+ /* Return true if the dynamic string S ends with character C. */
+ int
+ ds_endswith (dynamic_string *s, int c)
 diff --git a/src/dstring.h b/src/dstring.h
-index b5135fe..f5f95ec 100644
+index f5b04ef..50c877d 100644
 --- a/src/dstring.h
 +++ b/src/dstring.h
-@@ -49,3 +49,4 @@ void ds_resize (dynamic_string *string, int size);
+@@ -41,6 +41,7 @@ void ds_reset (dynamic_string *s, size_t len);
  char *ds_fgetname (FILE *f, dynamic_string *s);
  char *ds_fgets (FILE *f, dynamic_string *s);
  char *ds_fgetstr (FILE *f, dynamic_string *s, char eos);
 +char *ds_sgetstr (char *input_string, dynamic_string *s, char eos);
+ void ds_append (dynamic_string *s, int c);
+ void ds_concat (dynamic_string *s, char const *str);
+ 
 diff --git a/src/extern.h b/src/extern.h
 index 11ac6bf..f295fcf 100644
 --- a/src/extern.h
@@ -340,10 +342,10 @@ index 11ac6bf..f295fcf 100644
  /* copyin.c */
  void warn_junk_bytes (long bytes_skipped);
 diff --git a/src/global.c b/src/global.c
-index fb3abe9..0c40be0 100644
+index acf92bc..d45e19b 100644
 --- a/src/global.c
 +++ b/src/global.c
-@@ -199,3 +199,5 @@ char *change_directory_option;
+@@ -196,3 +196,5 @@ char *change_directory_option;
  int renumber_inodes_option;
  int ignore_devno_option;
  
