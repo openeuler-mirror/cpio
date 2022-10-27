@@ -1,6 +1,6 @@
 Name:           cpio
 Version:        2.13
-Release:        6
+Release:        7
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -64,6 +64,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Thu Oct 27 2022 dongyuzhen <dongyuzhen@h-partners.com> - 2.13-7
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:Rebuild for next release
+
 * Tue Aug 24 2021 yangzhuangzhuang <yangzhuangzhuang1@huawei.com> - 2.13-6
 - Type:CVE
 - ID:CVE-2021-38185
