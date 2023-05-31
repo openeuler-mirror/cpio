@@ -1,6 +1,6 @@
 Name:           cpio
 Version:        2.13
-Release:        4
+Release:        5
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -18,6 +18,7 @@ Patch7:		revert-CVE-2015-1197.patch
 Patch8:         backport-0001-CVE-2021-38185-Rewrite-dynamic-string-support.patch
 Patch9:         backport-0002-CVE-2021-38185-Fix-previous-commit.patch
 Patch10:        backport-0003-CVE-2021-38185-Fix-dynamic-string-reallocations.patch
+Patch11:        backport-CVE-2015-1197-Fix-45b0ee2b407913c533f7ded8d6f8cbeec16ff6ca.patch
 
 Patch9000:      add-option-to-add-metadata-in-copy-out-mode.patch
 Patch9001:      Fix-use-after-free-and-return-appropriate-error.patch
@@ -63,6 +64,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Sat May 27 2023 fuanan <fuanan3@h-partners.com> - 2.13-5
+- Type:CVE
+- ID:CVE-2015-1197
+- SUG:NA
+- DESC:Fix CVE-2015-1197
+
 * Tue Aug 24 2021 yangzhuangzhuang <yangzhuangzhuang1@huawei.com> - 2.13-4
 - Type:CVE
 - ID:CVE-2021-38185
