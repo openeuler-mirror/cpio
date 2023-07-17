@@ -1,6 +1,6 @@
 Name:           cpio
-Version:        2.13
-Release:        9
+Version:        2.14
+Release:        1
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -14,11 +14,8 @@ Patch3:         cpio-2.9.90-defaultremoteshell.patch
 Patch4:         cpio-2.10-patternnamesigsegv.patch
 Patch5:         cpio-2.10-longnames-split.patch
 Patch6:         cpio-2.11-crc-fips-nit.patch
-Patch7:		revert-CVE-2015-1197.patch
-Patch8:         backport-cpio-2.13-mutiple-definition.patch
-Patch9:         backport-0001-CVE-2021-38185-Rewrite-dynamic-string-support.patch
-Patch10:        backport-0002-CVE-2021-38185-Fix-previous-commit.patch
-Patch11:        backport-0003-CVE-2021-38185-Fix-dynamic-string-reallocations.patch
+Patch7:         revert-CVE-2015-1197.patch
+Patch8:         revert-CVE-2015-1197-Fix-45b0ee2b407913c533f7ded8d6f8cbeec16ff6ca.patch
 
 Patch9000:      add-option-to-add-metadata-in-copy-out-mode.patch
 Patch9001:      Fix-use-after-free-and-return-appropriate-error.patch
@@ -64,6 +61,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Mon Jul 17 2023 zhangruifang <zhangruifang1@h-partners.com> - 2.14-1
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:update to 2.14
+
 * Tue Jun 20 2023 fuanan <fuanan3@h-partners.com> - 2.13-9
 - Type:bugfix
 - ID:NA

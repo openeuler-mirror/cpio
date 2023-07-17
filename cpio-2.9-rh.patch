@@ -56,7 +56,7 @@ index a13861f..a875a13 100644
    {NULL, 'c', NULL, 0,
 -   N_("Use the old portable (ASCII) archive format"), GRID+1 },
 +   N_("Identical to \"-H newc\", use the new (SVR4) portable format. If you wish the old portable (ASCII) archive format, use \"-H odc\" instead."), GRID+1 },
-   {"dot", 'V', NULL, 0, 
+   {"dot", 'V', NULL, 0,
     N_("Print a \".\" for each file processed"), GRID+1 },
    {"io-size", 'C', N_("NUMBER"), 0,
 @@ -329,6 +329,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
