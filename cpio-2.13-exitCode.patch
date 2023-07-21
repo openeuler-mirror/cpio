@@ -32,7 +32,7 @@ index b45c731..fd8454d 100755
 @@ -2885,7 +2885,6 @@ fi
  at_status=$? at_failed=false
  $at_check_filter
- echo >>"$at_stderr"; $as_echo "cpio: file: value size 17179869184 out of allowed range 0..8589934591
+ echo >>"$at_stderr"; printf "%s\n" "cpio: file: value size 17179869184 out of allowed range 0..8589934591
 -2 blocks
  " | \
    $at_diff - "$at_stderr" || at_failed=:

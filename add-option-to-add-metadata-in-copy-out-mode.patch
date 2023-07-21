@@ -18,23 +18,24 @@ The format of metadata for the xattr type is:
 <xattr name>\0<xattr value>
 
 Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+
 ---
  doc/cpio.texi   |   3 ++
- src/copyout.c   | 140 ++++++++++++++++++++++++++++++++++++++++++++++++++++++--
- src/dstring.c   |  26 +++++++++--
+ src/copyout.c   | 138 +++++++++++++++++++++++++++++++++++++++++++++++-
+ src/dstring.c   |  26 +++++++--
  src/dstring.h   |   1 +
- src/extern.h    |   4 +-
- src/global.c    |   2 +
- src/initramfs.h |  21 +++++++++
- src/main.c      |  22 +++++++++
- 8 files changed, 211 insertions(+), 8 deletions(-)
+ src/extern.h    |   2 +
+ src/global.c    |   4 ++
+ src/initramfs.h |  21 ++++++++
+ src/main.c      |  22 ++++++++
+ 8 files changed, 212 insertions(+), 5 deletions(-)
  create mode 100644 src/initramfs.h
 
 diff --git a/doc/cpio.texi b/doc/cpio.texi
-index 31a15fa..03d9585 100644
+index bef7ba5..ea73a92 100644
 --- a/doc/cpio.texi
 +++ b/doc/cpio.texi
-@@ -276,6 +276,9 @@ Set the I/O block size to the given @var{number} of bytes.
+@@ -279,6 +279,9 @@ Set the I/O block size to the given @var{number} of bytes.
  @item -D @var{dir}
  @itemx --directory=@var{dir}
  Change to directory @var{dir}
@@ -45,10 +46,10 @@ index 31a15fa..03d9585 100644
  Treat the archive file as local, even if its name contains colons.
  @item -F [[@var{user}@@]@var{host}:]@var{archive-file}
 diff --git a/src/copyout.c b/src/copyout.c
-index 421d36d..4cd60a3 100644
+index 6e82f4c..8ae1a48 100644
 --- a/src/copyout.c
 +++ b/src/copyout.c
-@@ -22,6 +22,7 @@
+@@ -21,6 +21,7 @@
  #include <stdio.h>
  #include <sys/types.h>
  #include <sys/stat.h>
@@ -56,7 +57,7 @@ index 421d36d..4cd60a3 100644
  #include "filetypes.h"
  #include "cpiohdr.h"
  #include "dstring.h"
-@@ -589,6 +590,94 @@ assign_string (char **pvar, char *value)
+@@ -586,6 +587,94 @@ assign_string (char **pvar, char *value)
    *pvar = p;
  }
  
@@ -151,7 +152,7 @@ index 421d36d..4cd60a3 100644
  /* Read a list of file names from the standard input
     and write a cpio collection on the standard output.
     The format of the header depends on the compatibility (-c) flag.  */
-@@ -604,6 +693,8 @@ process_copy_out (void)
+@@ -601,6 +690,8 @@ process_copy_out (void)
    int in_file_des;		/* Source file descriptor.  */
    int out_file_des;		/* Output file descriptor.  */
    char *orig_file_name = NULL;
@@ -160,9 +161,9 @@ index 421d36d..4cd60a3 100644
  
    /* Initialize the copy out.  */
    file_hdr.c_magic = 070707;
-@@ -635,9 +726,37 @@ process_copy_out (void)
-       prepare_append (out_file_des);
-     }
+@@ -632,9 +723,37 @@ process_copy_out (void)
+   else
+     change_dir ();
  
 +  /* Create a temporary file to store file metadata */
 +  if (metadata_type != TYPE_NONE) {
@@ -199,25 +200,23 @@ index 421d36d..4cd60a3 100644
        /* Check for blank line.  */
        if (input_name.ds_string[0] == 0)
  	{
-@@ -662,8 +781,15 @@ process_copy_out (void)
- 		    ds_append (&input_name, '/');
+@@ -660,7 +779,14 @@ process_copy_out (void)
  		}
  	    }
--	  
+ 
 -	  assign_string (&orig_file_name, input_name.ds_string);
-+
-+	  if (old_metadata) {
-+	    assign_string (&orig_file_name, template);
-+	    ds_sgetstr (METADATA_FILENAME, &input_name, name_end);
-+	    file_hdr.c_mode |= 0x10000;
++          if (old_metadata) {
++	     assign_string (&orig_file_name, template);
++	     ds_sgetstr (METADATA_FILENAME, &input_name, name_end);
++	     file_hdr.c_mode |= 0x10000;
 +	  } else {
-+	    assign_string (&orig_file_name, input_name.ds_string);
++	     assign_string (&orig_file_name, input_name.ds_string);
 +	  }
 +
  	  cpio_safer_name_suffix (input_name.ds_string, false,
  				  !no_abs_paths_flag, true);
  	  cpio_set_c_name (&file_hdr, input_name.ds_string);
-@@ -695,6 +821,7 @@ process_copy_out (void)
+@@ -692,6 +818,7 @@ process_copy_out (void)
  		  else
  		    {
  		      add_link_defer (&file_hdr);
@@ -225,7 +224,7 @@ index 421d36d..4cd60a3 100644
  		      break;
  		    }
  		}
-@@ -831,6 +958,8 @@ process_copy_out (void)
+@@ -830,6 +957,8 @@ process_copy_out (void)
  	    fprintf (stderr, "%s\n", orig_file_name);
  	  if (dot_flag)
  	    fputc ('.', stderr);
@@ -234,7 +233,7 @@ index 421d36d..4cd60a3 100644
  	}
      }
  
-@@ -871,6 +1000,11 @@ process_copy_out (void)
+@@ -870,4 +999,9 @@ process_copy_out (void)
      }
    cpio_file_stat_free (&file_hdr);
    ds_free (&input_name);
@@ -244,13 +243,11 @@ index 421d36d..4cd60a3 100644
 +    unlink(template);
 +  }
  }
- 
- 
 diff --git a/src/dstring.c b/src/dstring.c
-index 0f597cc..07e827f 100644
+index b425121..f5d8ab5 100644
 --- a/src/dstring.c
 +++ b/src/dstring.c
-@@ -74,8 +74,8 @@ ds_reset (dynamic_string *s, size_t len)
+@@ -73,8 +73,8 @@ ds_reset (dynamic_string *s, size_t len)
     Return NULL if end of file is detected.  Otherwise,
     Return a pointer to the null-terminated string in S.  */
  
@@ -261,7 +258,7 @@ index 0f597cc..07e827f 100644
  {
    int next_ch;
  
-@@ -83,10 +83,18 @@ ds_fgetstr (FILE *f, dynamic_string *s, char eos)
+@@ -82,10 +82,18 @@ ds_fgetstr (FILE *f, dynamic_string *s, char eos)
    s->ds_idx = 0;
  
    /* Read the input string.  */
@@ -281,20 +278,20 @@ index 0f597cc..07e827f 100644
      }
    ds_resize (s, 0);
    s->ds_string[s->ds_idx] = '\0';
-@@ -121,6 +129,12 @@ ds_concat (dynamic_string *s, char const *str)
+@@ -119,6 +127,12 @@ ds_concat (dynamic_string *s, char const *str)
+   s->ds_string[s->ds_idx] = 0;
  }
  
- char *
++char *
 +ds_fgetstr (FILE *f, dynamic_string *s, char eos)
 +{
 +  return ds_fgetstr_common (f, NULL, s, eos);
 +}
 +
-+char *
+ char *
  ds_fgets (FILE *f, dynamic_string *s)
  {
-   return ds_fgetstr (f, s, '\n');
-@@ -132,6 +146,12 @@ ds_fgetname (FILE *f, dynamic_string *s)
+@@ -131,6 +145,12 @@ ds_fgetname (FILE *f, dynamic_string *s)
    return ds_fgetstr (f, s, '\0');
  }
  
@@ -308,10 +305,10 @@ index 0f597cc..07e827f 100644
  int
  ds_endswith (dynamic_string *s, int c)
 diff --git a/src/dstring.h b/src/dstring.h
-index f5b04ef..50c877d 100644
+index ac540be..d934d1d 100644
 --- a/src/dstring.h
 +++ b/src/dstring.h
-@@ -41,6 +41,7 @@ void ds_reset (dynamic_string *s, size_t len);
+@@ -40,6 +40,7 @@ void ds_reset (dynamic_string *s, size_t len);
  char *ds_fgetname (FILE *f, dynamic_string *s);
  char *ds_fgets (FILE *f, dynamic_string *s);
  char *ds_fgetstr (FILE *f, dynamic_string *s, char eos);
@@ -320,37 +317,38 @@ index f5b04ef..50c877d 100644
  void ds_concat (dynamic_string *s, char const *str);
  
 diff --git a/src/extern.h b/src/extern.h
-index 11ac6bf..f295fcf 100644
+index 6afbdd2..49369ab 100644
 --- a/src/extern.h
 +++ b/src/extern.h
-@@ -19,6 +19,7 @@
+@@ -18,6 +18,7 @@
  
  #include "paxlib.h"
  #include "quotearg.h"
 +#include "initramfs.h"
  #include "quote.h"
+ #include "inttostr.h"
  
- enum archive_format
-@@ -99,7 +100,8 @@ extern char output_is_seekable;
+@@ -100,6 +101,7 @@ extern char output_is_seekable;
  extern int (*xstat) ();
  extern void (*copy_function) ();
  extern char *change_directory_option;
--
 +extern enum metadata_types metadata_type;
-+
  
- /* copyin.c */
- void warn_junk_bytes (long bytes_skipped);
+ #define STRINGIFY_BIGINT(i, b) umaxtostr (i, b)
+ enum { UINTMAX_STRSIZE_BOUND = INT_BUFSIZE_BOUND (intmax_t) };
 diff --git a/src/global.c b/src/global.c
-index acf92bc..d45e19b 100644
+index 7c4bca8..bbd84fe 100644
 --- a/src/global.c
 +++ b/src/global.c
-@@ -196,3 +196,5 @@ char *change_directory_option;
+@@ -194,4 +194,8 @@ char *change_directory_option;
+ 
  int renumber_inodes_option;
  int ignore_devno_option;
- 
++
 +/* include file metadata into the image */
 +enum metadata_types metadata_type = TYPE_NONE;
++
+ int ignore_dirnlink_option;
 diff --git a/src/initramfs.h b/src/initramfs.h
 new file mode 100644
 index 0000000..88abae7
@@ -379,19 +377,19 @@ index 0000000..88abae7
 +
 +#endif /*_LINUX_INITRAMFS_H*/
 diff --git a/src/main.c b/src/main.c
-index 6f90055..e343286 100644
+index f9b4d85..8d5988e 100644
 --- a/src/main.c
 +++ b/src/main.c
-@@ -199,6 +199,8 @@ static struct argp_option options[] = {
+@@ -202,6 +202,8 @@ static struct argp_option options[] = {
    {"device-independent", DEVICE_INDEPENDENT_OPTION, NULL, 0,
     N_("Create device-independent (reproducible) archives") },
    {"reproducible", 0, NULL, OPTION_ALIAS },
 +  {"file-metadata", 'e', N_("TYPE"), 0,
 +   N_("Include file metadata"), GRID+1 },
  #undef GRID
-   
+ 
    /* ********** */
-@@ -292,6 +294,22 @@ warn_control (char *arg)
+@@ -295,6 +297,22 @@ warn_control (char *arg)
    return 1;
  }
  
@@ -414,7 +412,7 @@ index 6f90055..e343286 100644
  static error_t
  parse_opt (int key, char *arg, struct argp_state *state)
  {
-@@ -354,6 +372,10 @@ parse_opt (int key, char *arg, struct argp_state *state)
+@@ -357,6 +375,10 @@ parse_opt (int key, char *arg, struct argp_state *state)
        copy_matching_files = false;
        break;
  
@@ -426,5 +424,5 @@ index 6f90055..e343286 100644
        pattern_file_name = arg;
        break;
 -- 
-1.8.3.1
+2.27.0
 
