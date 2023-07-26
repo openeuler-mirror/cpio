@@ -1,6 +1,6 @@
 Name:           cpio
 Version:        2.14
-Release:        1
+Release:        2
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -14,8 +14,8 @@ Patch3:         cpio-2.9.90-defaultremoteshell.patch
 Patch4:         cpio-2.10-patternnamesigsegv.patch
 Patch5:         cpio-2.10-longnames-split.patch
 Patch6:         cpio-2.11-crc-fips-nit.patch
-Patch7:         revert-CVE-2015-1197.patch
-Patch8:         revert-CVE-2015-1197-Fix-45b0ee2b407913c533f7ded8d6f8cbeec16ff6ca.patch
+Patch7:         revert-CVE-2015-1197-Fix-45b0ee2b407913c533f7ded8d6f8cbeec16ff6ca.patch
+Patch8:         revert-CVE-2015-1197.patch
 
 Patch9000:      add-option-to-add-metadata-in-copy-out-mode.patch
 Patch9001:      Fix-use-after-free-and-return-appropriate-error.patch
@@ -61,6 +61,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Wed Jul 26 2023 zhangruifang <zhangruifang1@h-partners.com> - 2.14-2
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:revert CVE-2015-1197 fix for --no-absolute-filenames
+
 * Mon Jul 17 2023 zhangruifang <zhangruifang1@h-partners.com> - 2.14-1
 - Type:enhancement
 - ID:NA
