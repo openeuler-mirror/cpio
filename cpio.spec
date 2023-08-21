@@ -1,6 +1,6 @@
 Name:           cpio
 Version:        2.14
-Release:        2
+Release:        3
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -14,8 +14,9 @@ Patch3:         cpio-2.9.90-defaultremoteshell.patch
 Patch4:         cpio-2.10-patternnamesigsegv.patch
 Patch5:         cpio-2.10-longnames-split.patch
 Patch6:         cpio-2.11-crc-fips-nit.patch
-Patch7:         revert-CVE-2015-1197-Fix-45b0ee2b407913c533f7ded8d6f8cbeec16ff6ca.patch
-Patch8:         revert-CVE-2015-1197.patch
+Patch7:         backport-restore-access-and-modification-times-of-symlinks.patch
+Patch8:         backport-fix-operation-of-no-absolute-filenames-make-director.patch
+Patch9:         backport-Do-not-set-exit-code-to-2-when-failing-to-create-symlink.patch
 
 Patch9000:      add-option-to-add-metadata-in-copy-out-mode.patch
 Patch9001:      Fix-use-after-free-and-return-appropriate-error.patch
@@ -61,6 +62,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Mon Aug 21 2023 fuanan <fuanan3@h-partners.com> - 2.14-3
+- Type:CVE
+- ID:CVE-2015-1197
+- SUG:NA
+- DESC:Fix CVE-2015-1197
+
 * Wed Jul 26 2023 zhangruifang <zhangruifang1@h-partners.com> - 2.14-2
 - Type:bugfix
 - ID:NA
