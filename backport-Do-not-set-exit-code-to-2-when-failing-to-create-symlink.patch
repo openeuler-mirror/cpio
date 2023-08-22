@@ -1,0 +1,34 @@
+From 2cf05f5a1826dd127d5c9063cc8cc7667746be38 Mon Sep 17 00:00:00 2001
+From: Ziyang Chen <chenziyang4@huawei.com>
+Date: Mon, 10 Jul 2023 20:19:27 +0800
+Subject: [PATCH] Do not set exit code to 2 when failing to create symlink
+
+---
+ src/copyin.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/copyin.c b/src/copyin.c
+index 2e72356..2b6b361 100644
+--- a/src/copyin.c
++++ b/src/copyin.c
+@@ -736,7 +736,7 @@ replace_symlink_placeholders (void)
+ 		  res = UMASKED_SYMLINK (dl->source, dl->target, dl->mode);
+ 		}
+ 	      if (res < 0)
+-		symlink_error (dl->source, dl->target);
++		error (0, errno, _("%s: Cannot create symlink to %s"), quotearg_colon (dl->target), quote_n (1, dl->source));
+ 	      else
+ 		{
+ 		  if (!no_chown_flag)
+@@ -789,7 +789,7 @@ copyin_link (struct cpio_file_stat *file_hdr, int in_file_des)
+ 	  res = UMASKED_SYMLINK (link_name, file_hdr->c_name, file_hdr->c_mode);
+ 	}
+       if (res < 0)
+-	symlink_error (link_name, file_hdr->c_name);
++	error (0, errno, _("%s: Cannot create symlink to %s"), quotearg_colon (file_hdr->c_name), quote_n (1, link_name));
+       else if (!no_chown_flag)
+ 	{
+ 	  uid_t uid = set_owner_flag ? set_owner : file_hdr->c_uid;
+-- 
+2.27.0
+
