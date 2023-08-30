@@ -1,6 +1,6 @@
 Name:           cpio
 Version:        2.13
-Release:        9
+Release:        10
 Summary:        A GNU archiving program
 
 License:        GPLv3+
@@ -14,12 +14,13 @@ Patch3:         cpio-2.9.90-defaultremoteshell.patch
 Patch4:         cpio-2.10-patternnamesigsegv.patch
 Patch5:         cpio-2.10-longnames-split.patch
 Patch6:         cpio-2.11-crc-fips-nit.patch
-Patch7:		revert-CVE-2015-1197.patch
 Patch8:         backport-cpio-2.13-mutiple-definition.patch
 Patch9:         backport-0001-CVE-2021-38185-Rewrite-dynamic-string-support.patch
 Patch10:        backport-0002-CVE-2021-38185-Fix-previous-commit.patch
 Patch11:        backport-0003-CVE-2021-38185-Fix-dynamic-string-reallocations.patch
-
+Patch12:        backport-CVE-2015-1197.patch
+Patch13:        backport-fix-operation-of-no-absolute-filenames-make-director.patch
+Patch14:        backport-Do-not-set-exit-code-to-2-when-failing-to-create-sym.patch
 Patch9000:      add-option-to-add-metadata-in-copy-out-mode.patch
 Patch9001:      Fix-use-after-free-and-return-appropriate-error.patch
 
@@ -64,6 +65,12 @@ make check
 %{_datadir}/man/man1/%{name}.1.gz
 
 %changelog
+* Wed Aug 30 2023 chenziyang <chenziyang4@huawei.com> - 2.13-10
+- Type:CVE
+- ID:CVE-2015-1197
+- SUG:NA
+- DESC:backport CVE-2015-1197, delete revert-CVE-2015-1197.patch and backport the following 2 bugfix patches
+
 * Tue Jun 20 2023 fuanan <fuanan3@h-partners.com> - 2.13-9
 - Type:bugfix
 - ID:NA
